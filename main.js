@@ -213,13 +213,33 @@ function showShareToast(url) {
   setTimeout(() => t?.remove(), 6000);
 }
 
+// Only these keys ever populate state.prefs from a share link. A share link
+// is JSON an attacker could hand-craft and send to someone else, so we can't
+// Object.assign it in wholesale — a "__proto__" key would let it repoint
+// state.prefs's prototype for the rest of the session. Allowlisting known
+// fields (rather than blocking "__proto__"/"constructor" specifically) keeps
+// this safe by construction as fields get added later.
+const SHARE_PREF_KEYS = [
+  'destination', 'check_in', 'check_out', 'num_guests', 'num_adults', 'num_children',
+  'children_ages', 'budget_min', 'budget_max', 'budget_currency', 'accommodation_type',
+  'transportation_needs', 'activities', 'amenities', 'pet_friendly', 'accessible',
+];
+function sanitizeSharedPrefs(obj) {
+  const out = {};
+  if (!obj || typeof obj !== 'object') return out;
+  for (const key of SHARE_PREF_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) out[key] = obj[key];
+  }
+  return out;
+}
+
 function readSharedUrl() {
   const params = new URLSearchParams(location.search);
   const encoded = params.get('search');
   if (!encoded) return;
 
   try {
-    const prefs = JSON.parse(decodeURIComponent(atob(encoded)));
+    const prefs = sanitizeSharedPrefs(JSON.parse(decodeURIComponent(atob(encoded))));
     state.prefs    = prefs;
     state.demoCity = prefs.destination || null;
     updatePreferences(prefs);
@@ -576,7 +596,8 @@ function bookingUrl(kind, listing) {
   // Both sites price adults and children differently, so passing the combined
   // guest count as the adult count overprices a family and can filter out
   // places that would actually fit them. Derive the split when we know it.
-  const ages = (state.prefs.children_ages || []).filter(a => Number.isFinite(a) && a >= 0 && a < 18);
+  const agesRaw = Array.isArray(state.prefs.children_ages) ? state.prefs.children_ages : [];
+  const ages = agesRaw.filter(a => Number.isFinite(a) && a >= 0 && a < 18);
   const children = state.prefs.num_children || ages.length;
   const adults = state.prefs.num_adults || Math.max(1, (state.prefs.num_guests || 1) - children);
   if (kind === 'airbnb') {
@@ -769,7 +790,7 @@ function updatePreferences(data) {
     let g=`${p.num_guests} guest${p.num_guests>1?'s':''}`;
     if(p.num_adults||p.num_children) g+=` (${p.num_adults||0} adults, ${p.num_children||0} children)`;
     // Ages drive child pricing on both sites, so show them back for confirmation.
-    const ages=(p.children_ages||[]).filter(a=>Number.isFinite(a));
+    const ages=(Array.isArray(p.children_ages)?p.children_ages:[]).filter(a=>Number.isFinite(a));
     if(ages.length) g+=` · ages ${ages.join(', ')}`;
     $('pref-guests').textContent=g; show('sec-guests');
   }
