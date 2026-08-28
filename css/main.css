@@ -96,7 +96,13 @@ body::before {
 /* ── LAYOUT ── */
 .app {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  /* minmax(0, 1fr), not bare 1fr — a bare 1fr track's implicit minimum is
+     the min-content width of whatever's inside it (here, .chat-panel's
+     widest unbroken content), so the track — and everything downstream —
+     stayed pinned to that width no matter how narrow the viewport got or
+     how many min-width:0 fixes were applied inside it. minmax(0, 1fr)
+     removes that floor and lets the track actually shrink to fit. */
+  grid-template-columns: minmax(0, 1fr) 360px;
   grid-template-rows: 60px 1fr;
   height: 100vh;
   position: relative;
@@ -188,7 +194,15 @@ body::before {
 }
 
 .messages {
-  flex: 1; overflow-y: auto;
+  /* min-width:0 is required, not decorative: a flex item's default
+     min-width is auto (= its content's natural width), so without this
+     .messages refuses to shrink below its widest content (the welcome
+     paragraph) and overflows .chat-panel — which clips it via its own
+     overflow:hidden before it ever reaches document.body, invisibly. This
+     is the same flex min-width bug as the header buttons, one level
+     deeper, and it's why the welcome text was cut off mid-word in the
+     original bug report even independent of the header fix. */
+  flex: 1; min-width: 0; overflow-y: auto;
   padding: 28px 32px;
   display: flex; flex-direction: column; gap: 20px;
   scroll-behavior: smooth;
@@ -635,7 +649,11 @@ body::before {
 .empty-icon  { font-size: 32px; opacity: 0.5; }
 .empty-text  { font-size: 13px; line-height: 1.6; font-weight: 300; }
 
-.welcome     { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px 24px; gap: 6px; }
+/* min-width:0 — .welcome is itself a flex item of .messages (also a flex
+   container), one level deeper than the fix above; each nested flex level
+   has its own independent min-width:auto default, so it has to be reset at
+   every level, not just the outermost one. */
+.welcome     { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-width: 0; text-align: center; padding: 40px 24px; gap: 6px; }
 .welcome-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
 .welcome-title   { font-family: var(--font-display); font-size: 42px; font-weight: 300; line-height: 1.2; color: var(--cream); margin-bottom: 14px; }
 .welcome-title em { font-style: italic; color: var(--gold-light); }
@@ -663,31 +681,10 @@ body::before {
    RESPONSIVE — Tablet ≤900px
    ================================================================ */
 @media (max-width: 900px) {
-  /* Row 1 was a fixed 56px, sized for one line of header content. Below,
-     .header-actions wraps onto its own line once five buttons (Save, Share,
-     Map, Preferences, New Search) don't fit one row — a fixed height would
-     clip that second line, invisibly, since html/body sets overflow:hidden
-     and there is no scrollbar to reach clipped content. `auto` lets the row
-     grow with whatever the header actually needs, on any phone width. */
-  .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 56px 1fr; }
   .header-status { display: none; }
   .sidebar-toggle { display: flex; }
   .sidebar-close  { display: flex; }
-
-  /* Wrap instead of scroll: a swipe-to-reach button row is still friction.
-     Letting the logo and the action row stack (and the actions wrap onto a
-     further line if a phone is too narrow even for one row of five) keeps
-     every control reachable with an ordinary tap, no gesture required. */
-  .header {
-    flex-wrap: wrap;
-    row-gap: 8px;
-    padding: 10px 24px;
-  }
-  /* flex-basis 100% claims the whole row once it drops to its own line —
-     without it, a lone wrapped flex item's position under space-between is
-     ambiguous (browsers treat a one-item line as flex-start, pinning it
-     under the logo instead of spanning the row for flex-end to work with). */
-  .header-actions { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-end; }
 
   .sidebar {
     position: fixed; top: 0; right: 0;
@@ -745,10 +742,34 @@ body::before {
    RESPONSIVE — Mobile ≤480px
    ================================================================ */
 @media (max-width: 480px) {
-  .header { padding: 10px 14px; }
-  .logo-text { font-size: 19px; }
-  .btn-ghost { padding: 5px 10px; font-size: 11px; flex-shrink: 0; }
-  .sidebar-toggle { flex-shrink: 0; }
+  .header { padding: 0 10px; }
+
+  /* Logo + 5 text-labeled buttons on one line doesn't fit any phone width —
+     the previous attempt wrapped them to a second line, but that put the
+     logo and site name above the buttons, which is the one thing this isn't
+     allowed to do. Icon-only buttons (same icons, label hidden) are the
+     standard way to keep a whole toolbar on one row at phone widths; each
+     button keeps its full name via aria-label for screen readers. */
+  .btn-label { display: none; }
+
+  /* The wordmark alone (icon + "StayFinder") is ~118px — with all 5 icon
+     buttons at a genuine 44px touch target, the two together need ~386px,
+     more than even a 430px phone in landscape has to spare once the Map
+     button appears after a search. Dropping the text and keeping just the
+     icon badge (still a clear brand mark, and the browser/PWA title carries
+     the name besides) is what actually closes the gap without shrinking
+     the touch targets below 44px to do it. */
+  .logo-text { display: none; }
+
+  /* 44px matches the min-height already set for this element at ≤900px —
+     setting width/height (not min-*) here too keeps the button a true
+     square instead of a 44×40 rectangle once both rules apply together. */
+  button.btn-ghost, button.sidebar-toggle {
+    width: 44px; height: 44px; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 15px;
+  }
+  .header-actions { gap: 6px; }
   .messages  { padding: 16px 14px; gap: 14px; }
   .welcome   { padding: 28px 16px; }
   .welcome-title { font-size: 32px; }

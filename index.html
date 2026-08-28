@@ -84,16 +84,16 @@
 
     <div class="header-actions">
 
-      <button class="btn-ghost" onclick="saveCurrentSearch()" title="Save this search"><span aria-hidden="true">🔖</span> Save</button>
-      <button class="btn-ghost" onclick="shareSearch()" title="Copy shareable link"><span aria-hidden="true">🔗</span> Share</button>
+      <button class="btn-ghost" onclick="saveCurrentSearch()" title="Save this search" aria-label="Save this search"><span aria-hidden="true">🔖</span><span class="btn-label"> Save</span></button>
+      <button class="btn-ghost" onclick="shareSearch()" title="Copy shareable link" aria-label="Copy shareable link"><span aria-hidden="true">🔗</span><span class="btn-label"> Share</span></button>
 
       <!-- Map toggle — appears after listings found -->
-      <button class="btn-ghost map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()" style="display:none;">
-        <span aria-hidden="true">🗺</span> Map
+      <button class="btn-ghost map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()" style="display:none;" aria-label="Show map">
+        <span aria-hidden="true">🗺</span><span class="btn-label"> Map</span>
       </button>
 
-      <button class="sidebar-toggle" onclick="openSidebar()"><span aria-hidden="true">✦</span> Preferences</button>
-      <button class="btn-ghost" onclick="resetChat()">New Search</button>
+      <button class="sidebar-toggle" onclick="openSidebar()" aria-label="Open preferences"><span aria-hidden="true">✦</span><span class="btn-label"> Preferences</span></button>
+      <button class="btn-ghost" onclick="resetChat()" aria-label="Start a new search"><span aria-hidden="true">🔄</span><span class="btn-label"> New Search</span></button>
     </div>
   </header>
 
