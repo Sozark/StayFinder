@@ -160,6 +160,10 @@ body::before {
 
 .header-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
 
+/* Short label swaps in only at ≤480px (see that breakpoint) — hidden here
+   so desktop/tablet show the one full word each button already has. */
+.btn-label-short { display: none; }
+
 .btn-ghost {
   background: none;
   border: 1px solid rgba(200,151,42,0.25);
@@ -742,34 +746,25 @@ body::before {
    RESPONSIVE — Mobile ≤480px
    ================================================================ */
 @media (max-width: 480px) {
-  .header { padding: 0 10px; }
+  .header { padding: 0 6px; }
 
-  /* Logo + 5 text-labeled buttons on one line doesn't fit any phone width —
-     the previous attempt wrapped them to a second line, but that put the
-     logo and site name above the buttons, which is the one thing this isn't
-     allowed to do. Icon-only buttons (same icons, label hidden) are the
-     standard way to keep a whole toolbar on one row at phone widths; each
-     button keeps its full name via aria-label for screen readers. */
-  .btn-label { display: none; }
+  /* Logo + 5 full-text buttons genuinely doesn't fit a phone-width row —
+     "Preferences" and "New Search" alone are wider than a lot of phones
+     are. Rather than drop the words (icon-only) or let the row wrap below
+     the logo, both of which were tried and rejected, the two long labels
+     swap to short ones here; Save/Share/Map are already short enough to
+     keep as-is. Logo and every button keep real, readable text throughout —
+     this block just tightens sizing enough for that text to fit. */
+  .btn-label-full  { display: none; }
+  .btn-label-short { display: inline; }
 
-  /* The wordmark alone (icon + "StayFinder") is ~118px — with all 5 icon
-     buttons at a genuine 44px touch target, the two together need ~386px,
-     more than even a 430px phone in landscape has to spare once the Map
-     button appears after a search. Dropping the text and keeping just the
-     icon badge (still a clear brand mark, and the browser/PWA title carries
-     the name besides) is what actually closes the gap without shrinking
-     the touch targets below 44px to do it. */
-  .logo-text { display: none; }
+  .logo { gap: 4px; }
+  .logo-icon { width: 24px; height: 24px; font-size: 12px; border-radius: 6px; }
+  .logo-text { font-size: 13px; }
 
-  /* 44px matches the min-height already set for this element at ≤900px —
-     setting width/height (not min-*) here too keeps the button a true
-     square instead of a 44×40 rectangle once both rules apply together. */
-  button.btn-ghost, button.sidebar-toggle {
-    width: 44px; height: 44px; padding: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    flex-shrink: 0; font-size: 15px;
-  }
-  .header-actions { gap: 6px; }
+  .header-actions { gap: 1px; }
+  .btn-ghost, .sidebar-toggle { padding: 4px 3px; font-size: 9.5px; }
+
   .messages  { padding: 16px 14px; gap: 14px; }
   .welcome   { padding: 28px 16px; }
   .welcome-title { font-size: 32px; }

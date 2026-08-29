@@ -92,8 +92,15 @@
         <span aria-hidden="true">🗺</span><span class="btn-label"> Map</span>
       </button>
 
-      <button class="sidebar-toggle" onclick="openSidebar()" aria-label="Open preferences"><span aria-hidden="true">✦</span><span class="btn-label"> Preferences</span></button>
-      <button class="btn-ghost" onclick="resetChat()" aria-label="Start a new search"><span aria-hidden="true">🔄</span><span class="btn-label"> New Search</span></button>
+      <!-- "Preferences"/"New Search" are the two labels too wide to keep in full
+           on a phone-width row alongside everything else — the short span
+           takes over at <=480px (see main.css), full word otherwise. -->
+      <button class="sidebar-toggle" onclick="openSidebar()" aria-label="Open preferences">
+        <span aria-hidden="true">✦</span><span class="btn-label btn-label-full"> Preferences</span><span class="btn-label btn-label-short"> Prefs</span>
+      </button>
+      <button class="btn-ghost" onclick="resetChat()" aria-label="Start a new search">
+        <span aria-hidden="true">🔄</span><span class="btn-label btn-label-full"> New Search</span><span class="btn-label btn-label-short"> New</span>
+      </button>
     </div>
   </header>
 
