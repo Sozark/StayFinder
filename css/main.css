@@ -590,6 +590,8 @@ body::before {
   border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: transform 0.15s, opacity 0.15s;
+  /* Same reasoning as .mic-btn's margin-bottom above — (38px − 29px)/2. */
+  margin-bottom: -4.5px;
 }
 .send-btn:hover    { transform: scale(1.08); }
 .send-btn:active   { transform: scale(0.95); }
@@ -731,6 +733,10 @@ body::before {
   button.mic-btn, button.send-btn {
     width: 44px; height: 44px; flex-shrink: 0;
   }
+  /* mic/send grow from 34px/38px to 44px here, so the vertical-centering
+     margin-bottom (see their base rules) needs the same touch-target size
+     plugged in: (44px − 29px)/2. */
+  button.mic-btn, button.send-btn { margin-bottom: -7.5px; }
 
   /* Same 44px minimum for the text-label header buttons (Save/Share/Map/
      Preferences/New Search) — their padding-only sizing gives ~29px on
@@ -863,9 +869,14 @@ body::before {
   color: var(--cream-dim); cursor: pointer; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
-  /* No margin-bottom: .input-row aligns children to the bottom edge, and an
-     extra offset here (unlike .send-btn) pushed the mic icon visibly above
-     the input text's centerline instead of level with it. */
+  /* .input-row bottom-aligns its children (deliberately — it keeps mic/send
+     pinned to the bottom line as the textarea grows multi-line, rather than
+     floating mid-box). But a round button taller than the single-line input
+     text sits with its center above the text's center once merely bottom-
+     aligned: (button height − input's 29px line height) / 2, pulled back up
+     via a negative margin-bottom. Recompute this if #chat-input's line
+     height or padding changes. */
+  margin-bottom: -2.5px;
   transition: border-color 0.2s, color 0.2s, background-color 0.2s;
 }
 .mic-btn:hover { border-color: var(--gold); color: var(--gold-light); }

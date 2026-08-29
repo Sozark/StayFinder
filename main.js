@@ -197,7 +197,6 @@ function showShareToast(url) {
     max-width:min(420px,90vw);box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
   t.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <span style="font-size:16px;">🔗</span>
       <strong style="color:var(--gold-light);">Link copied to clipboard!</strong>
     </div>
     <div style="font-size:11px;color:var(--cream-faint);word-break:break-all;line-height:1.5;
@@ -251,7 +250,7 @@ function readSharedUrl() {
     }, 600);
 
     history.replaceState(null, '', location.pathname);
-    showToast('🔗 Shared search loaded!');
+    showToast('Shared search loaded!');
   } catch {
     // Malformed param — silently ignore
   }
@@ -384,7 +383,7 @@ function showMapPlaceholder(city, listings) {
             <div style="font-family:var(--font-display);font-size:15px;color:var(--cream);font-weight:500;">${escapeHtml(l.title)}</div>
             <div style="font-size:14px;color:var(--gold-light);white-space:nowrap;margin-left:8px;">$${Number(l.price) || '?'}<span style="font-size:10px;color:var(--cream-faint)">/night</span></div>
           </div>
-          <div style="font-size:12px;color:var(--cream-dim);margin-top:3px;">📍 ${escapeHtml(l.location)}</div>
+          <div style="font-size:12px;color:var(--cream-dim);margin-top:3px;">${escapeHtml(l.location)}</div>
           <div style="font-size:12px;color:var(--gold);margin-top:2px;">★ ${Number(l.rating) || '—'} · ${Number(l.reviews) || 0} reviews</div>
         </button>`).join('')}
     </div>`;
@@ -486,7 +485,7 @@ function openCompare() {
   const rows = [
     { label: 'Price / night', key: l => `<span class="compare-price">$${Number(l.price) || '?'}<span>/night</span></span>` },
     { label: 'Rating',        key: l => `<span class="compare-rating">★ ${Number(l.rating) || '—'}</span> <span style="font-size:12px;color:var(--cream-faint)">${Number(l.reviews) || 0} reviews</span>` },
-    { label: 'Type',          key: l => l.type === 'airbnb' ? '🏠 Airbnb' : '🏨 Hotel' },
+    { label: 'Type',          key: l => l.type === 'airbnb' ? 'Airbnb' : 'Hotel' },
     { label: 'Location',      key: l => escapeHtml(l.location) },
     { label: 'Amenities',     key: l => `<div class="compare-tags">${(l.amenities||[]).map(a => `<span class="tag tag-green">${escapeHtml(a)}</span>`).join('')}</div>` },
     { label: 'Highlights',    key: l => `<div class="compare-tags">${(l.tags||[]).map((t,i) => `<span class="tag tag-${safeTagColor((l.tagColors||[])[i])}">${escapeHtml(t)}</span>`).join('')}</div>` },
@@ -642,11 +641,11 @@ function buildListingCard(listing) {
         <div class="listing-title">${escapeHtml(listing.title)}</div>
         <div class="listing-price">$${Number(listing.price) || '?'} <span>/ night</span></div>
       </div>
-      <div class="listing-location">📍 ${escapeHtml(listing.location)}</div>
+      <div class="listing-location">${escapeHtml(listing.location)}</div>
       <div class="listing-rating">${listing.rating ? `★ ${Number(listing.rating)} · ${Number(listing.reviews) || 0} reviews` : ''}</div>
       <div class="listing-tags">${tagHtml}</div>
       <div class="listing-links">
-        ${directUrl ? `<a class="listing-link-btn" href="${directUrl}" target="_blank" rel="noopener noreferrer">🔗 View Listing</a>` : ''}
+        ${directUrl ? `<a class="listing-link-btn" href="${directUrl}" target="_blank" rel="noopener noreferrer">View Listing</a>` : ''}
         <a class="listing-link-btn" href="${escapeHtml(bookingUrl('airbnb', listing))}" target="_blank" rel="noopener noreferrer">Search Airbnb</a>
         <a class="listing-link-btn" href="${escapeHtml(bookingUrl('booking', listing))}" target="_blank" rel="noopener noreferrer">Search Booking.com</a>
       </div>
@@ -682,7 +681,7 @@ function addMessage(role, content, isHtml = false) {
       readBtn.className = 'read-aloud-btn';
       readBtn.title = 'Read aloud';
       readBtn.setAttribute('aria-label', 'Read message aloud');
-      readBtn.textContent = '🔊';
+      readBtn.textContent = 'Listen';
       readBtn.addEventListener('click', () => toggleReadAloud(readBtn, plainText));
       wrap.appendChild(readBtn);
     }
@@ -801,7 +800,7 @@ function updatePreferences(data) {
     html += `<span>${sym}${p.budget_max||p.budget_min}</span>`;
     $('pref-budget').innerHTML = html; show('sec-budget');
   }
-  if (p.accommodation_type) { const labels={airbnb:'🏠 Airbnb',hotel:'🏨 Hotel',both:'🏠🏨 Both'}; $('pref-type').textContent=labels[p.accommodation_type]||p.accommodation_type; show('sec-type'); }
+  if (p.accommodation_type) { const labels={airbnb:'Airbnb',hotel:'Hotel',both:'Both'}; $('pref-type').textContent=labels[p.accommodation_type]||p.accommodation_type; show('sec-type'); }
   show('div-2');
   if (p.transportation_needs) { $('pref-transport').textContent=p.transportation_needs; show('sec-transport'); }
   if (p.activities&&p.activities.length) { renderTags('pref-activities',p.activities,'tag-gold'); show('sec-activities'); }
@@ -1071,7 +1070,7 @@ function generateDemoListings(city, budget, type) {
 }
 
 function getCityBlurb(city) {
-  const blurbs={'New York City':'One of the most exciting cities in the world.','Miami Beach':'Sun, sand, and incredible energy 🌴','Los Angeles':'Endless sunshine and so much to explore 🌅','San Francisco':'Stunning views everywhere 🌉','Chicago':'Amazing architecture, food, and lakefront 🌆','Paris':'La Ville Lumière — there is truly nowhere like it 🥐','London':'A world-class city with something for everyone 🇬🇧','Tokyo':'One of the most fascinating cities on earth 🗾'};
+  const blurbs={'New York City':'One of the most exciting cities in the world.','Miami Beach':'Sun, sand, and incredible energy.','Los Angeles':'Endless sunshine and so much to explore.','San Francisco':'Stunning views everywhere.','Chicago':'Amazing architecture, food, and lakefront.','Paris':'La Ville Lumière — there is truly nowhere like it.','London':'A world-class city with something for everyone.','Tokyo':'One of the most fascinating cities on earth.'};
   return blurbs[city] || 'Sounds like a wonderful trip!';
 }
 
@@ -1102,7 +1101,7 @@ async function simulateResponse(msg) {
   };
   if (Object.keys(prefUpdate).length > 0) setTimeout(() => updatePreferences(prefUpdate), 200);
 
-  if (!currentCity) return `Welcome to **StayFinder AI** — running in demo mode right now (no backend reachable). 🌍\n\nWhere are you headed? Tell me the destination and we'll find the perfect stay.`;
+  if (!currentCity) return `Welcome to **StayFinder AI** — running in demo mode right now (no backend reachable).\n\nWhere are you headed? Tell me the destination and we'll find the perfect stay.`;
 
   const shortCity = currentCity.split(',')[0];
   if (!currentGuests) return `**${currentCity}** — great choice! ${getCityBlurb(shortCity)}\n\nHow many guests will be staying, and do you have travel dates in mind?`;
@@ -1121,7 +1120,7 @@ async function simulateResponse(msg) {
   registerListings(listings, currentCity);
 
   const cardsHtml = listings.map(l => buildListingCard(l)).join('');
-  return `Here are the top matches for your stay in **${shortCity}** 🏡 (demo data — connect the backend for real, live listings)\n\nSelect up to 3 listings to compare side-by-side, or open the map to see locations.\n\n${cardsHtml}`;
+  return `Here are the top matches for your stay in **${shortCity}** (demo data — connect the backend for real, live listings)\n\nSelect up to 3 listings to compare side-by-side, or open the map to see locations.\n\n${cardsHtml}`;
 }
 
 // ── Backend reachability check (for the honest "AI Concierge Active" badge) ──
@@ -1217,11 +1216,11 @@ function resetChat() {
     <div class="welcome-title">Find your perfect<br><em>place to stay</em></div>
     <div class="welcome-sub">Tell me where you're headed and I'll find the best Airbnbs and hotels — matched to your budget, style, and every preference.</div>
     <div class="quick-prompts">
-      <div class="quick-prompt" onclick="quickSend(this)">🌴 Beach trip for 2 in Miami</div>
-      <div class="quick-prompt" onclick="quickSend(this)">🏙️ NYC hotel under $200/night</div>
-      <div class="quick-prompt" onclick="quickSend(this)">🐾 Pet-friendly Airbnb in Portland</div>
-      <div class="quick-prompt" onclick="quickSend(this)">🎿 Ski cabin in Colorado, 6 guests</div>
-      <div class="quick-prompt" onclick="quickSend(this)">🌆 Business trip to Chicago, near transit</div>
+      <div class="quick-prompt" onclick="quickSend(this)">Beach trip for 2 in Miami</div>
+      <div class="quick-prompt" onclick="quickSend(this)">NYC hotel under $200/night</div>
+      <div class="quick-prompt" onclick="quickSend(this)">Pet-friendly Airbnb in Portland</div>
+      <div class="quick-prompt" onclick="quickSend(this)">Ski cabin in Colorado, 6 guests</div>
+      <div class="quick-prompt" onclick="quickSend(this)">Business trip to Chicago, near transit</div>
     </div>`;
   messages.appendChild(welcome);
   hide('pref-content'); show('pref-empty'); closeSidebar();
