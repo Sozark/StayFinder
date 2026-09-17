@@ -104,7 +104,13 @@ body::before {
      removes that floor and lets the track actually shrink to fit. */
   grid-template-columns: minmax(0, 1fr) 360px;
   grid-template-rows: 60px 1fr;
+  /* 100vh on mobile is measured against the viewport with browser chrome
+     collapsed, so the grid — and the input row inside it — renders taller
+     than what's actually on screen, pushing the search bar out of view
+     until the page scrolls. 100dvh tracks the real visible viewport;
+     100vh stays as the fallback for browsers without dvh support. */
   height: 100vh;
+  height: 100dvh;
   position: relative;
   z-index: 1;
 }
